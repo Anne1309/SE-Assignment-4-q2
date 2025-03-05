@@ -14,6 +14,12 @@ def initialize_database():
     conn.commit()
     conn.close()
 
+teacherid={
+    't1':'math',
+    't2':'science',
+    't3':'english'
+}
+
 def add_student(roll_number, name):
     conn = sqlite3.connect('marks.db')
     c = conn.cursor()
@@ -79,10 +85,10 @@ def main():
             add_student(roll_number, name)
             print("Student added successfully.")
         elif choice == 2:
+            tid = input("Enter your teacher id").strip().lower()
             roll_number = int(input("Enter roll number: "))
-            subject = input("Enter subject (math/science/english): ").strip().lower()
-            marks = int(input("Enter marks for " + subject + ": "))
-            update_marks(roll_number, subject, marks)
+            marks = int(input("Enter marks for " + teacherid[tid] + ": "))
+            update_marks(roll_number, teacherid[tid], marks)
             print("Marks updated successfully.")
         elif choice == 3:
             students = sort_database()
