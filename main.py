@@ -14,7 +14,7 @@ def initialize_database():
     conn.commit()
     conn.close()
 
-teacherid={
+teachers={
     't1':'math',
     't2':'science',
     't3':'english'
@@ -29,24 +29,37 @@ def add_student(roll_number, name):
     conn.close()
 
 def update_marks(roll_number, subject, marks):
-    valid_subjects = {"math", "science", "english"}
-    if subject not in valid_subjects:
-        print("Invalid subject! Choose from math, science, or english.")
-        return
+        valid_subjects = {"math", "science", "english"}
+        if subject not in valid_subjects:
+                print("Invalid subject! Choose from math, science, or english.")
+                return
 
-    column_name = subject + "_marks"
+        column_name = subject + "_marks"
 
-    conn = sqlite3.connect('marks.db')
-    c = conn.cursor()
-    query = "UPDATE marks SET " + column_name + " = ? WHERE roll_number = ?"
-    c.execute(query, (marks, roll_number))
-    c.execute("""
-        UPDATE marks
-        SET total_marks = COALESCE(math_marks, 0) + COALESCE(science_marks, 0) + COALESCE(english_marks, 0)
-        WHERE roll_number = ?
-    """, (roll_number,))
-    conn.commit()
-    conn.close()
+        conn = sqlite3.connect('marks.db')
+        c = conn.cursor()
+        query = "UPDATE marks SET " + column_name + " = ? WHERE roll_number = ?"
+        c.execute(query, (marks, roll_number))
+        c.execute("""
+                UPDATE marks
+                SET total_marks = COALESCE(math_marks, 0) + COALESCE(science_marks, 0) + COALESCE(english_marks, 0)
+                WHERE roll_number = ?
+                """, (roll_number,))
+        conn.commit()
+        conn.close()
+
+def check_roll_number(roll_number):
+        conn=sqlite3.connect('marks.db')
+        c = conn.cursor()
+        c.execute("Select * FROM marks WHERE roll_number=?",(roll_number,))
+        result = c.fetchone()
+
+        if not result:
+                print("Roll number " + str(roll_number) + "does not exist in the database")
+                return False
+        else:
+                return True
+        conn.close()
 
 def sort_database():
     conn = sqlite3.connect('marks.db')
@@ -73,31 +86,42 @@ def display_menu():
     print("4. Exit")
 
 def main():
-    initialize_database()
+        initialize_database()
 
-    while True:
-        display_menu()
-        choice = input("Enter your choice: ")
+        while True:
+                display_menu()
+                choice = input("Enter your choice: ")
 
-        if choice == 1:
-            roll_number = int(input("Enter roll number: "))
-            name = input("Enter name: ")
-            add_student(roll_number, name)
-            print("Student added successfully.")
-        elif choice == 2:
-            tid = input("Enter your teacher id").strip().lower()
-            roll_number = int(input("Enter roll number: "))
-            marks = int(input("Enter marks for " + teacherid[tid] + ": "))
-            update_marks(roll_number, teacherid[tid], marks)
-            print("Marks updated successfully.")
-        elif choice == 3:
-            students = sort_database()
-            display_students(students)
-        elif choice == 4:
-            print("Exiting program.")
-            break
-        else:
-            print("Invalid choice. Please try again.")
+                if choice == 1:
+                        roll_number = int(input("Enter roll number: "))
+                        name = input("Enter name: ")
+                        add_student(roll_number, name)
+                        print("Student added successfully.")
+
+                elif choice == 2:
+                        tid = input("Enter your teacher id : ").strip().lower()
+                        if tid in teachers:
+                                while True:
+                                        roll_number = int(input("Enter roll number: "))
+                                        res=check_roll_number(roll_number)
+                                        if res==True:
+                                                break
+                                marks = int(input("Enter marks for " + teachers[tid] + ": "))
+                                update_marks(roll_number, teachers[tid], marks)
+                                print("Marks updated successfully.")
+                        else:
+                                print("Invalid Teacher ID entered. Access Denied")
+
+                elif choice == 3:
+                        students = sort_database()
+                        display_students(students)
+
+                elif choice == 4:
+                        print("Exiting program.")
+                        break
+
+                else:
+                        print("Invalid choice. Please try again.")
 
 if __name__ == "__main__":
     main()
