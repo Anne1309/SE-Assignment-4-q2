@@ -1,3 +1,9 @@
+# Project: Marks Management System with Git 
+#  
+# Description:  
+# This project is a command-line marks management system. The main code has been developed by the code creator, 
+# while database preparation was assisted by two contributors.  
+
 import sqlite3
 
 def initialize_database():
@@ -55,7 +61,7 @@ def check_roll_number(roll_number):
         result = c.fetchone()
 
         if not result:
-                print("Roll number " + str(roll_number) + "does not exist in the database")
+                print("Roll number " + str(roll_number) + " does not exist in the database")
                 return False
         else:
                 return True
@@ -70,12 +76,12 @@ def sort_database():
     return result
 
 def display_students(students):
-    print("\n{:<12} {:<20} {:<12} {:<12} {:<12} {:<12}".format(
+    print("\n{:<12} | {:<16} | {:<15} | {:<15} | {:<15} | {:<15}".format(
         "Roll Number", "Name", "Math Marks", "Science Marks", "English Marks", "Total Marks"))
-    print("-" * 80)
+    print("-" * 100)
 
     for student in students:
-        print("{:<12} {:<20} {:<12} {:<12} {:<12} {:<12}".format(*student))
+        print("{:<12} | {:<16} | {:<15} | {:<15} | {:<15} | {:<15}".format(*student))
     print()
 
 def display_menu():
@@ -90,7 +96,7 @@ def main():
 
         while True:
                 display_menu()
-                choice = input("Enter your choice: ")
+                choice = int(input("Enter your choice: "))
 
                 if choice == 1:
                         roll_number = int(input("Enter roll number: "))
@@ -99,16 +105,18 @@ def main():
                         print("Student added successfully.")
 
                 elif choice == 2:
-                        tid = input("Enter your teacher id : ").strip().lower()
+                        tid = input("Enter your teacher id [t1 / t2 / t3]: ").strip().lower()
                         if tid in teachers:
                                 while True:
                                         roll_number = int(input("Enter roll number: "))
                                         res=check_roll_number(roll_number)
                                         if res==True:
-                                                break
-                                marks = int(input("Enter marks for " + teachers[tid] + ": "))
-                                update_marks(roll_number, teachers[tid], marks)
-                                print("Marks updated successfully.")
+                                                marks = int(input("Enter marks for " + teachers[tid] + ": "))
+                                                update_marks(roll_number, teachers[tid], marks)
+                                                print("Marks updated successfully.")
+                                                f = input("Do you want to enter marks for another student? [yes/no] : ").strip().lower()
+                                                if f == 'no' or f == 'n':
+                                                       break
                         else:
                                 print("Invalid Teacher ID entered. Access Denied")
 
